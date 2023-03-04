@@ -69,3 +69,52 @@ workflow {
     MultiQC(single_ch)
 }
 
+
+
+//channel.fromPath('data/*.{fq, fastq.gz}', hidden: true)
+//    .set {reads_ch}
+
+// process fastqc {
+//    input:
+//    path reads
+//
+//    script:
+//    """
+//    echo $reads
+//    """
+//}  
+
+
+//workflow{
+//    def reads =channel.fromPath('data/*.{fq, fastq.gz}')
+//    fastqc(reads)
+//}
+
+
+
+
+process fastqc {
+    input:
+    path reads
+
+    script:
+    """
+    cat -n 2 $reads
+    """
+}
+
+workflow {
+    def reads = channel.fromPath('data/*.fq').view()
+    fastqc(reads)
+}
+
+
+
+
+
+
+
+
+
+
+
