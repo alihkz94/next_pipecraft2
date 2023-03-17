@@ -109,9 +109,54 @@ workflow {
 }
 
 
+#####Change IUPAC codes in the primers #########
+params {
+    projectDir = '.'
+    reads = "$projectDir/data/F_{1,2}.fastq"
+    min_seq_length = 32
+    min_overlap = 21
+    mismatch = 1
+    no_indels = true
+    seqs_to_keep = 'keep_all'
+    discard_untrimmed = true
+    output_dir = 'results'
+    cpus = 2
+    memory = 2
+    forward_primer = "TGCAGGNTGGCAGCAGGCTA"
+    reverse_primer = "GGACTACNVGGGTWTCTAAT"
+}
+
+#!/usr/bin/env nextflow
+
+nextflow.enable.dsl=2
 
 
+nextflow.enable.dsl=2
+primer_fwd = Channel.of (params.forward_primer)
+primer_rev = Channel.of (params.reverse_primer)
 
+
+process convertPrimer {
+
+
+    input:
+    val primer_forward 
+    val primer_reverse
+
+    output:
+    stdout 
+    
+    shell:
+
+    """
+    IUPAC.sh ${params.forward_primer} ${params.reverse_primer}
+    """
+}
+
+workflow{
+    primer_ch= convertPrimer(primer_fwd, primer_rev) | collect | flatten | view
+
+}
 
 
 
