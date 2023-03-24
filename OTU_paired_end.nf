@@ -109,10 +109,28 @@ workflow {
 }
 
 
-/* PRIMER TRIMMING */
+nextflow.enable.dsl=2
 
-primer_forward = Channel.of ()
+forward_ch= Channel.of(params.forward_primer)
+reverse_ch= Channel.of(params.reverse_primer)
 
+process convertPrimer{
+    input:
+    val forward_ch
+    val reverse_ch
+    
+    output:
+    stdout
+
+    shell:
+    """
+    Primer.sh ${params.forward_primer} ${params.reverse_primer}
+    """
+}   
+
+workflow{
+    primer_ch= convertPrimer(forward_ch,reverse_ch) | collect | flatten | view
+}
 
 
 
