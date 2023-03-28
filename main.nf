@@ -3,9 +3,6 @@
 nextflow.enable.dsl=2
 
 
-params.projectDir = '.'
-params.reads   = "$projectDir/data/*_{1,2}.fastq"
-params.multiqc = "$projectDir/multiqc"
 params.outdir  = "$projectDir/results"
 forward_ch= Channel.of(params.forward_primer)
 reverse_ch= Channel.of(params.reverse_primer)
@@ -24,13 +21,13 @@ process FASTQC {
     label 'FASTQC'
     tag "FASTQC on $sample_id"
     publishDir params.outdir
- 
+
     input:
     tuple val(sample_id), path(reads)
- 
+
     output:
     path "fastqc_${sample_id}_logs"
- 
+
     script:
     """
     mkdir fastqc_${sample_id}_logs
@@ -54,39 +51,6 @@ process MultiQC {
     """
 }
 
-
-workflow {
-    Channel
-        .fromFilePairs(params.reads, checkIfExists: true)
-        .set { read_pairs_ch }
-
-    fastqc_ch = FASTQC(read_pairs_ch)
- /*   MULTIQC(quant_ch.mix(fastqc_ch).collect()) */
-    fastqc_ch
-            .collect()
-            .flatten()
-            .view()
-            .set {single_ch}
-    MultiQC(single_ch)
-}
-
-process fastqc {
-    input:
-    path reads
-
-    script:
-    """
-    cat -n 2 $reads
-    """
-}
-
-workflow {
-    def reads = channel.fromPath('data/*.fq').view()
-    fastqc(reads)
-}
-
-
-
 process convertPrimer{
     publishDir params.outdir, mode:'copy'
 
@@ -101,11 +65,25 @@ process convertPrimer{
     """
     Primer.sh ${params.forward_primer} ${params.reverse_primer}
     """
-}   
+} 
 
-workflow{
+
+workflow {
+    Channel
+        .fromFilePairs(params.reads, checkIfExists: true)
+        .set { read_pairs_ch }
+
+    fastqc_ch = FASTQC(read_pairs_ch)
+ /*   MULTIQC(quant_ch.mix(fastqc_ch).collect()) */
+    fastqc_ch
+            .collect()
+            .flatten()
+            .view()
+            .set {single_ch}
+    MultiQC(single_ch)
     primer_ch= convertPrimer(forward_ch,reverse_ch) | collect | flatten | view
 }
+
 
 
 
