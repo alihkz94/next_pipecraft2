@@ -1,3 +1,3 @@
 # next_pipecraft2
 
-this is a repository that iw will develop nextflow + PIPECRAFT2
+This is a repository that i will develop nextflow + PIPECRAFT2
