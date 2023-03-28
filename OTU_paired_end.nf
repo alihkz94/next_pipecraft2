@@ -7,7 +7,8 @@ params.projectDir = '.'
 params.reads   = "$projectDir/data/*_{1,2}.fastq"
 params.multiqc = "$projectDir/multiqc"
 params.outdir  = "$projectDir/results"
-
+forward_ch= Channel.of(params.forward_primer)
+reverse_ch= Channel.of(params.reverse_primer)
 
 
 log.info """\
@@ -69,30 +70,6 @@ workflow {
     MultiQC(single_ch)
 }
 
-
-
-//channel.fromPath('data/*.{fq, fastq.gz}', hidden: true)
-//    .set {reads_ch}
-
-// process fastqc {
-//    input:
-//    path reads
-//
-//    script:
-//    """
-//    echo $reads
-//    """
-//}  
-
-
-//workflow{
-//    def reads =channel.fromPath('data/*.{fq, fastq.gz}')
-//    fastqc(reads)
-//}
-
-
-
-
 process fastqc {
     input:
     path reads
@@ -109,9 +86,6 @@ workflow {
 }
 
 
-
-forward_ch= Channel.of(params.forward_primer)
-reverse_ch= Channel.of(params.reverse_primer)
 
 process convertPrimer{
     publishDir params.outdir, mode:'copy'
