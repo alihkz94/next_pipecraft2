@@ -109,7 +109,6 @@ workflow {
 }
 
 
-nextflow.enable.dsl=2
 
 forward_ch= Channel.of(params.forward_primer)
 reverse_ch= Channel.of(params.reverse_primer)
