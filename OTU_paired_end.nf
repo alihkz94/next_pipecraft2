@@ -4,7 +4,7 @@ nextflow.enable.dsl=2
 
 
 params.projectDir = '.'
-params.reads   = "$projectDir/data/F_{1,2}.fastq"
+params.reads   = "$projectDir/data/*_{1,2}.fastq"
 params.multiqc = "$projectDir/multiqc"
 params.outdir  = "$projectDir/results"
 
