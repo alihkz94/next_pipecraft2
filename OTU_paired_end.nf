@@ -115,12 +115,14 @@ forward_ch= Channel.of(params.forward_primer)
 reverse_ch= Channel.of(params.reverse_primer)
 
 process convertPrimer{
+    publishDir params.outdir, mode:'copy'
+
     input:
     val forward_ch
     val reverse_ch
     
     output:
-    stdout
+    path '**.fasta'
 
     shell:
     """
